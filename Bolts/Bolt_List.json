@@ -1,0 +1,242 @@
+[
+  {
+    "Name": "Bat",
+    "X": 78,
+    "Z": -319,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Concrete Converter",
+    "X": -30,
+    "Z": 104,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Crafting Area",
+    "X": -365,
+    "Z": -288,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Double Witch #1",
+    "X": 11,
+    "Z": -134,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Fish",
+    "X": -431,
+    "Z": -21,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Flower",
+    "X": -154,
+    "Z": -94,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "General Passive",
+    "X": -656,
+    "Z": 244,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Gold",
+    "X": -100,
+    "Z": 620,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Guardian",
+    "X": 157,
+    "Z": 130,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Heart",
+    "X": -100,
+    "Z": 1127,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Ice",
+    "X": 233,
+    "Z": -87,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Iron Farm",
+    "X": -190,
+    "Z": -55,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Witch #2",
+    "X": -1855,
+    "Z": 475,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Museum",
+    "X": 453,
+    "Z": -326,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "New Ice",
+    "X": 434,
+    "Z": -355,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Octagon",
+    "X": -84,
+    "Z": -1227,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "OW Gold",
+    "X": -249,
+    "Z": -608,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "OW Tree Farms",
+    "X": -533,
+    "Z": 351,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Rabbit",
+    "X": -1294,
+    "Z": -1460,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Rid Cancer",
+    "X": -269,
+    "Z": -250,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Slime",
+    "X": -778,
+    "Z": -1780,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Spawn",
+    "X": 0,
+    "Z": 0,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Squid",
+    "X": 277,
+    "Z": 25,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Storage",
+    "X": -105,
+    "Z": -7,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Stray",
+    "X": 386,
+    "Z": -267,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Theme park",
+    "X": -374,
+    "Z": 231,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Triangle",
+    "X": 862,
+    "Z": -1767,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Villager",
+    "X": 64,
+    "Z": 128,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Wolf",
+    "X": -2306,
+    "Z": -1107,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  },
+  {
+    "Name": "Moo Farm",
+    "X": -1183,
+    "Z": 11,
+    "Length": 0.0,
+    "BoltLength": 0.0,
+    "TravelTime": 0
+  }
+]
