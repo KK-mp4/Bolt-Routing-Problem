@@ -1,17 +1,20 @@
-# Piton Bolt Network Routing Problem (work in progress)
+# Minecraft Piton Bolt Network Routing Problem (work in progress)
 ## Different algorithms for connecting stations in a piston bolt network
 
 With all the new development in [piston bolt tech](https://youtube.com/playlist?list=PLI-RNUGw-AeRkX7MQm9ArljzVCuuSzg0y) old servers might consider rebuilding their piston bolt network in the nether.
 
+When you already know where the stations will be it is an interesting [combinatorial optimization](https://en.wikipedia.org/wiki/Combinatorial_optimization) problem of how to connect all stations with piston bolts in a way that your system is **both easy** to build (has smallest total piston bolt length) **and fast** (has smallest average piston bolt travel time between any set of two stations). I was always sleeping at [graph theory](https://en.wikipedia.org/wiki/Graph_theory) lectures, so I'm not saying that this is good stuff I coded in here.
+
 ## Problem Domain
-When you already know where the stations will be it is an interesting [combinatorial optimization](https://en.wikipedia.org/wiki/Combinatorial_optimization) problem on a [lattice graph](https://en.wikipedia.org/wiki/Lattice_graph) of how to connect all stations with piston bolts in a way that your system is **both easy** to build (has least piston bolt length) **and fast** (smallest piston bolt travel time). I was always sleeping at [graph theory](https://en.wikipedia.org/wiki/Graph_theory) lectures, so I'm not saying that this is good stuff I coded in here.
+Generalizing and looking outside the Minecraft this problem comes down to finding an optimal interconnect for a given set of points (stations) on a Euclidean 2 dimentional plane. Minecraft restriction adds to this problem the fact that plane is actually a rectilinear lattice graph. So classical euclidean geometry is getting replaced.
+Graph itself will be weighted and [undirected](https://en.m.wikipedia.org/wiki/Graph_(discrete_mathematics)#Undirected_graph), since ether people always build bolts both ways, or maybe you managed to get falling end portal, thus allowing you to teleport back to spawn instantly. Weight of a vertex will be calculated using [Chebyshev distance](https://en.wikipedia.org/wiki/Chebyshev_distance) since it takes same amount of time to go 1 block ether diagonally or straight.
 
 For all the calculations I will use coordinates of stations at [Dugged SMP](https://redirect.dugged.net:8443/map/#Survival-Nether-Top/0/7/128/-442/64), but same can be applied to any.<br/>
 
 ![image](https://user-images.githubusercontent.com/103208695/176758019-9b6523cc-89e9-464a-837e-a7187b8d20b1.png)
 
 ### 1. Merging at coordinates.
-First solution doesn’t go far from the existing system (of merging all piston bolts at central hub - storage system), just optimizes it. By going as much as possible diagonally before going straight we shorten travel time (since diagonally we travel sqrt((20^2)+(20^2)) = 28.28 m/s instead of 20 m/s).<br/>
+First solution doesn’t go far from the existing system. All stations are connected to a single internal node (portal to main storage system in our case), in graph theory this is also called a [star network](https://en.m.wikipedia.org/wiki/Star_(graph_theory)). But it is optimized from what we currently have by going as much as possible diagonally before going straight. That way we shorten travel time (since diagonally we travel sqrt((20^2)+(20^2)) = 28.28 m/s instead of 20 m/s).<br/>
 ![image](https://user-images.githubusercontent.com/103208695/176998754-63e4d135-e6cb-41ab-8d84-6db799609430.png)
 |||
 | ------------- | ------------- |
@@ -59,6 +62,9 @@ Small improvement to average travel time for NN algorithm we can do is to close 
 | Total bolt distance  | 14.6 km  |
 | Total travel time  | 12.2 min  |
 | Average travel time  | 182.7 sec  |
+
+### 6. [Rectilinear Steiner tree](https://en.m.wikipedia.org/wiki/Steiner_tree_problem)
+Work in progress on a heuristic [algorithm](https://www.textroad.com/pdf/JBASR/J.%20Basic.%20Appl.%20Sci.%20Res.,%203(1s)611-613,%202013.pdf) for constracting Stainer minimal tree<br/>
 
 # Getting started
 Eh, it is not really user friendly, find Bolt_List.json and enter your stations by hand.<br/>
