@@ -10,9 +10,11 @@
 
     public partial class Form1 : Form
     {
-        public List<Station> Stations = new List<Station>();
+        private List<Station> Stations = new List<Station>();
 
-        Bitmap Map;
+        private Random Rand = new Random();
+
+        private Bitmap Map;
 
         public Form1()
         {
@@ -85,7 +87,7 @@
 
         private void button3_Click(object sender, EventArgs e)
         {
-            switch(comboBox1.SelectedIndex)
+            switch (comboBox1.SelectedIndex)
             {
                 case 0:
                     {
@@ -113,11 +115,20 @@
                     }
                     break;
 
-                case 2:
+                case 3:
                     {
                         int distanceThreshold = 50;
 
-                        NN(distanceThreshold);
+                        AlltoAll(distanceThreshold);
+                    }
+                    break;
+
+                case 4:
+                    {
+                        int Threshold = 200;
+                        int distanceThreshold = 50;
+
+                        Closest(Threshold, distanceThreshold);
                     }
                     break;
 
@@ -126,22 +137,84 @@
             }
         }
 
-        private void NN(int distanceThreshold)
+        private void Closest(int Threshold, int distanceThreshold)
         {
-            List<Station> Stations2 = new List<Station>();
+            List<Station> StationsTMP = new List<Station>();
+
+            int maxDistance = 0;
 
             for (int i = 0; i < Stations.Count; i++)
             {
-                double length = Math.Round(Math.Sqrt((Math.Pow(Stations[i].X - x, 2) + Math.Pow(Stations[i].Z - z, 2))), 1);
-
-                if (length > distanceThreshold)
+                if (Math.Max(Math.Abs(Stations[i].X), Math.Abs(Stations[i].Z)) > maxDistance)
                 {
-                    double boltLength = Math.Max(Math.Abs(Stations[i].X), Math.Abs(Stations[i].Z));
-                    int travelTime = Convert.ToInt32(boltLength / 20);
-
-                    Station newStation = new Station(Stations[i].Name, Stations[i].X, Stations[i].Z, length, boltLength, travelTime);
-                    Stations2.Add(newStation);
+                    maxDistance = Math.Max(Math.Abs(Stations[i].X), Math.Abs(Stations[i].Z));
                 }
+
+                Station newStation = new Station(Stations[i].Name, Stations[i].X, Stations[i].Z);
+                StationsTMP.Add(newStation);
+            }
+
+            StationsTMP.Sort((x, y) => x.BoltLength.CompareTo(y.BoltLength));
+
+            PrepareBitmap();
+
+            Random rnd = new Random();
+
+            double totalDIstance = 0;
+            int totalTime = 0;
+            int boltCounter = 0;
+
+
+            int index = 0;
+            double minDIstance = Math.Sqrt((Math.Pow(StationsTMP[0].X - StationsTMP[1].X, 2) + Math.Pow(StationsTMP[0].Z - StationsTMP[1].X, 2)));
+            int x = StationsTMP[0].X;
+            int z = StationsTMP[0].Z;
+            StationsTMP.RemoveAt(0);
+
+            while (StationsTMP.Count > 0)
+            {
+                for (int i = 0; i < StationsTMP.Count; ++i)
+                {
+                    if (Math.Sqrt((Math.Pow(x - StationsTMP[i].X, 2) + Math.Pow(z - StationsTMP[i].X, 2))) < minDIstance)
+                    {
+                        minDIstance = Math.Sqrt((Math.Pow(x - StationsTMP[i].X, 2) + Math.Pow(z - StationsTMP[i].X, 2)));
+                        index = i;
+                    }
+                }
+
+                Color color = Color.FromArgb(rnd.Next(128, 256), rnd.Next(128, 256), rnd.Next(128, 256));
+                DrawBolt(x, z, StationsTMP[index].X, StationsTMP[index].Z, maxDistance);
+
+                if (StationsTMP.Count == 1)
+                    break;
+
+                x = StationsTMP[index].X;
+                z = StationsTMP[index].Z;
+                StationsTMP.RemoveAt(index);
+                minDIstance = Math.Sqrt((Math.Pow(StationsTMP[0].X - x, 2) + Math.Pow(StationsTMP[0].Z - x, 2)));
+                index = 0;
+            }
+
+            //label1.Text = $"Total bolt distance: {(double)totalDIstance / 1000:F0} km";
+            //label2.Text = $"Total travel time: {(double)totalTime / 60:F0} min";
+            //label3.Text = $"Average travel time: {(double)totalTime / boltCounter:F0} sec";
+        }
+
+        private void AlltoAll(int distanceThreshold)
+        {
+            List<Station> Stations2 = new List<Station>();
+
+            int maxDistance = 0;
+
+            for (int i = 0; i < Stations.Count; i++)
+            {
+                if (Math.Max(Math.Abs(Stations[i].X), Math.Abs(Stations[i].Z)) > maxDistance)
+                {
+                    maxDistance = Math.Max(Math.Abs(Stations[i].X), Math.Abs(Stations[i].Z));
+                }
+
+                Station newStation = new Station(Stations[i].Name, Stations[i].X, Stations[i].Z);
+                Stations2.Add(newStation);
             }
 
             Stations2.Sort((x, y) => x.BoltLength.CompareTo(y.BoltLength));
@@ -149,28 +222,37 @@
             dataGridView1.DataSource = null;
             dataGridView1.DataSource = Stations2;
 
-            PrepareBitmap(1024, 1024);
+            PrepareBitmap();
 
             Random rnd = new Random();
 
             double totalDIstance = 0;
             int totalTime = 0;
+            int boltCounter = 0;
 
-            for (int i = Stations2.Count - 1; i > 0; i--)
+            for (int i = 0; i < Stations2.Count; i++)
             {
-                var color = Color.FromArgb(rnd.Next(128, 256), rnd.Next(128, 256), rnd.Next(128, 256));
-                DrawBolt(x, z, Stations2[i].X, Stations2[i].Z, Stations2[Stations2.Count - 1].BoltLength, color);
-                totalDIstance += Stations2[i].Distance;
-                totalTime += Stations2[i].TravelTime;
-            }
+                for (int j = 0; j < Stations2.Count; j++)
+                {
+                    Color color = Color.FromArgb(rnd.Next(128, 256), rnd.Next(128, 256), rnd.Next(128, 256));
+                    try
+                    {
+                        DrawBolt(Stations2[i].X, Stations2[i].Z, Stations2[j].X, Stations2[j].Z, maxDistance);
+                        boltCounter++;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
 
-            //int j = 24;
-            //var color = Color.FromArgb(rnd.Next(128, 256), rnd.Next(128, 256), rnd.Next(128, 256));
-            //DrawBolt(x, z, Stations2[j].X, Stations2[j].Z, Stations2[Stations2.Count - 1].BoltLength, color);
+                    totalDIstance += Math.Sqrt((Math.Pow(Stations[i].X - Stations[j].X, 2) + Math.Pow(Stations[i].Z - Stations[j].X, 2)));
+                    totalTime += Convert.ToInt32((Math.Sqrt((Math.Pow(Stations[i].X - Stations[j].X, 2) + Math.Pow(Stations[i].Z - Stations[j].X, 2)))) / 20);
+                }
+            }
 
             label1.Text = $"Total bolt distance: {(double)totalDIstance / 1000:F0} km";
             label2.Text = $"Total travel time: {(double)totalTime / 60:F0} min";
-            label3.Text = $"Average travel time: {(double)totalTime / Stations2.Count:F0} sec";
+            label3.Text = $"Average travel time: {(double)totalTime / boltCounter:F0} sec";
         }
 
         private void MergeAtCoords(int x, int z, int distanceThreshold)
@@ -191,33 +273,25 @@
                 }
             }
 
-            Stations2.Sort((x, y) => x.BoltLength.CompareTo(y.BoltLength));
+            Stations2.Sort((x, y) => x.Distance.CompareTo(y.Distance));
 
             dataGridView1.DataSource = null;
             dataGridView1.DataSource = Stations2;
 
-            PrepareBitmap(1024, 1024);
-
-            Random rnd = new Random();
+            PrepareBitmap();
 
             double totalDIstance = 0;
-            int totalTime = 0;
 
             for (int i = Stations2.Count - 1; i > 0; i--)
             {
-                var color = Color.FromArgb(rnd.Next(128, 256), rnd.Next(128, 256), rnd.Next(128, 256));
-                DrawBolt(x, z, Stations2[i].X, Stations2[i].Z, Stations2[Stations2.Count - 1].BoltLength, color);
-                totalDIstance += Stations2[i].Distance;
-                totalTime += Stations2[i].TravelTime;
+                totalDIstance += DrawBolt(x, z, Stations2[i].X, Stations2[i].Z, Stations2[Stations2.Count - 1].BoltLength);
             }
 
-            //int j = 24;
-            //var color = Color.FromArgb(rnd.Next(128, 256), rnd.Next(128, 256), rnd.Next(128, 256));
-            //DrawBolt(x, z, Stations2[j].X, Stations2[j].Z, Stations2[Stations2.Count - 1].BoltLength, color);
+            double totalTime = totalDIstance / 20;
 
-            label1.Text = $"Total bolt distance: {(double)totalDIstance / 1000:F0} km";
-            label2.Text = $"Total travel time: {(double)totalTime / 60:F0} min";
-            label3.Text = $"Average travel time: {(double)totalTime / Stations2.Count:F0} sec";
+            label1.Text = $"Total bolt distance: {(double)totalDIstance / 1000:F1} km";
+            label2.Text = $"Total travel time: {totalTime / 60:F1} min";
+            label3.Text = $"Average travel time: {(totalTime / Stations2.Count) * 2:F1} sec";
         }
 
         private void MergeAtAverage(int distanceThreshold)
@@ -255,7 +329,7 @@
             dataGridView1.DataSource = null;
             dataGridView1.DataSource = Stations2;
 
-            PrepareBitmap(1024, 1024);
+            PrepareBitmap();
 
             Random rnd = new Random();
 
@@ -265,7 +339,7 @@
             for (int i = Stations2.Count - 1; i > 0; i--)
             {
                 var color = Color.FromArgb(rnd.Next(128, 256), rnd.Next(128, 256), rnd.Next(128, 256));
-                DrawBolt(averageX, averageZ, Stations2[i].X, Stations2[i].Z, Stations2[Stations2.Count - 1].BoltLength, color);
+                DrawBolt(averageX, averageZ, Stations2[i].X, Stations2[i].Z, Stations2[Stations2.Count - 1].BoltLength);
                 totalDIstance += Stations2[i].Distance;
                 totalTime += Stations2[i].TravelTime;
             }
@@ -298,7 +372,7 @@
             dataGridView1.DataSource = null;
             dataGridView1.DataSource = Stations2;
 
-            PrepareBitmap(1024, 1024);
+            PrepareBitmap();
 
             Random rnd = new Random();
 
@@ -308,12 +382,12 @@
             for (int i = Stations2.Count - 1; i > 1; i--)
             {
                 Color color = Color.FromArgb(rnd.Next(128, 256), rnd.Next(128, 256), rnd.Next(128, 256));
-                DrawBolt(Stations2[i - 1].X, Stations2[i - 1].Z, Stations2[i].X, Stations2[i].Z, Stations2[Stations2.Count - 1].BoltLength, color);
-                totalDIstance += Math.Sqrt((Math.Pow(Stations[i-1].X - Stations[i].X, 2) + Math.Pow(Stations[i-1].Z - Stations[i].X, 2)));
+                DrawBolt(Stations2[i - 1].X, Stations2[i - 1].Z, Stations2[i].X, Stations2[i].Z, Stations2[Stations2.Count - 1].BoltLength);
+                totalDIstance += Math.Sqrt((Math.Pow(Stations[i - 1].X - Stations[i].X, 2) + Math.Pow(Stations[i - 1].Z - Stations[i].X, 2)));
                 totalTime += Convert.ToInt32((Math.Sqrt((Math.Pow(Stations[i - 1].X - Stations[i].X, 2) + Math.Pow(Stations[i - 1].Z - Stations[i].X, 2)))) / 20);
             }
 
-            DrawBolt(Stations2[Stations2.Count - 1].X, Stations2[Stations2.Count - 1].Z, Stations2[0].X, Stations2[0].Z, Stations2[Stations2.Count - 1].BoltLength, Color.White);
+            DrawBolt(Stations2[Stations2.Count - 1].X, Stations2[Stations2.Count - 1].Z, Stations2[0].X, Stations2[0].Z, Stations2[Stations2.Count - 1].BoltLength);
             totalDIstance += Math.Sqrt((Math.Pow(Stations[Stations2.Count - 1].X - Stations[0].X, 2) + Math.Pow(Stations[Stations2.Count - 1].Z - Stations[0].X, 2)));
             totalTime += Convert.ToInt32((Math.Sqrt((Math.Pow(Stations[Stations2.Count - 1].X - Stations[0].X, 2) + Math.Pow(Stations[Stations2.Count - 1].Z - Stations[0].X, 2)))) / 20);
 
@@ -322,8 +396,12 @@
             label3.Text = $"Average travel time: {(double)totalTime / Stations2.Count:F0} sec";
         }
 
-        private void DrawBolt(int x0, int z0, int x, int z, double maxDistance, Color color)
+        private int DrawBolt(int x0, int z0, int x, int z, double maxDistance)
         {
+            int distance = 0;
+            Color color = GetColor();
+            Bitmap newMap = new Bitmap(Map);
+
             double ratioX = (2 * Math.Abs(maxDistance)) / (Map.Width);
             double ratioZ = (2 * Math.Abs(maxDistance)) / (Map.Height);
 
@@ -333,38 +411,39 @@
             int imgCoordsX = Convert.ToInt32(((double)x / ratioX) + ((double)Map.Width / 2));
             int imgCoordsZ = Convert.ToInt32(((double)z / ratioZ) + ((double)Map.Height / 2));
 
-
             int param_1 = imgCoordsX - imgCoordsX0;
             int param_2 = imgCoordsZ - imgCoordsZ0;
 
-            Bitmap newMap = new Bitmap(Map);
-
             if (param_1 < param_2)
             {
-                if(imgCoordsX > imgCoordsX0)
+                if (imgCoordsX > imgCoordsX0)
                 {
-                    while (imgCoordsX >= imgCoordsX0)
+                    while (imgCoordsX > imgCoordsX0)
                     {
                         newMap.SetPixel(imgCoordsX, imgCoordsZ, color);
                         imgCoordsX--;
 
                         if (imgCoordsZ > imgCoordsZ0)
                             imgCoordsZ--;
-                        else
+                        else if (imgCoordsZ < imgCoordsZ0)
                             imgCoordsZ++;
+
+                        distance++;
                     }
                 }
                 else
                 {
-                    while (imgCoordsX <= imgCoordsX0)
+                    while (imgCoordsX < imgCoordsX0)
                     {
                         newMap.SetPixel(imgCoordsX, imgCoordsZ, color);
                         imgCoordsX++;
 
                         if (imgCoordsZ > imgCoordsZ0)
                             imgCoordsZ--;
-                        else
+                        else if (imgCoordsZ < imgCoordsZ0)
                             imgCoordsZ++;
+
+                        distance++;
                     }
                 }
 
@@ -374,14 +453,18 @@
                     {
                         newMap.SetPixel(imgCoordsX, imgCoordsZ, color);
                         imgCoordsZ--;
+
+                        distance++;
                     }
                 }
                 else
                 {
-                    while (imgCoordsZ <= imgCoordsZ0)
+                    while (imgCoordsZ < imgCoordsZ0)
                     {
                         newMap.SetPixel(imgCoordsX, imgCoordsZ, color);
                         imgCoordsZ++;
+
+                        distance++;
                     }
                 }
             }
@@ -389,45 +472,53 @@
             {
                 if (imgCoordsZ > imgCoordsZ0)
                 {
-                    while (imgCoordsZ >= imgCoordsZ0)
+                    while (imgCoordsZ > imgCoordsZ0)
                     {
                         newMap.SetPixel(imgCoordsX, imgCoordsZ, color);
                         imgCoordsZ--;
 
                         if (imgCoordsX > imgCoordsX0)
                             imgCoordsX--;
-                        else
+                        else if (imgCoordsX < imgCoordsX0)
                             imgCoordsX++;
+
+                        distance++;
                     }
                 }
                 else
                 {
-                    while (imgCoordsZ <= imgCoordsZ0)
+                    while (imgCoordsZ < imgCoordsZ0)
                     {
                         newMap.SetPixel(imgCoordsX, imgCoordsZ, color);
                         imgCoordsZ++;
 
                         if (imgCoordsX > imgCoordsX0)
                             imgCoordsX--;
-                        else
+                        else if (imgCoordsX < imgCoordsX0)
                             imgCoordsX++;
+
+                        distance++;
                     }
                 }
 
                 if (imgCoordsX > imgCoordsX0)
                 {
-                    while (imgCoordsX >= imgCoordsX0)
+                    while (imgCoordsX > imgCoordsX0)
                     {
                         newMap.SetPixel(imgCoordsX, imgCoordsZ, color);
                         imgCoordsX--;
+
+                        distance++;
                     }
                 }
                 else
                 {
-                    while (imgCoordsX <= imgCoordsX0)
+                    while (imgCoordsX < imgCoordsX0)
                     {
                         newMap.SetPixel(imgCoordsX, imgCoordsZ, color);
                         imgCoordsX++;
+
+                        distance++;
                     }
                 }
             }
@@ -436,11 +527,44 @@
             Map = new Bitmap(newMap);
             newMap.Dispose();
             pictureBox1.Image = Map;
+            return distance;
         }
 
-        private void PrepareBitmap(int width, int height)
+        private Color GetColor()
         {
-            Map = new Bitmap(width, height);
+            Color color;
+            int option = Rand.Next(3);
+
+            if (option == 0)
+            {
+                color = Color.FromArgb(255, Rand.Next(256), Rand.Next(256));
+            }
+            else if (option == 1)
+            {
+                color = Color.FromArgb(Rand.Next(256), 255, Rand.Next(256));
+            }
+            else
+            {
+                color = Color.FromArgb(Rand.Next(256), Rand.Next(256), 255);
+            }
+
+            return color;
+        }
+
+        private void PrepareBitmap()
+        {
+            int resolution = 1080;
+
+            try
+            {
+                resolution = Convert.ToInt32(tBResolution.Text);
+            }
+            catch
+            {
+                MessageBox.Show("Wrong map resolution input", "Error");
+            }
+
+            Map = new Bitmap(resolution, resolution);
 
             RectangleF rectf = new RectangleF(0, 0, Map.Width, Map.Height);
             using (Graphics g2 = Graphics.FromImage(Map))
@@ -449,6 +573,7 @@
             }
         }
 
+        #region Trash
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (pictureBox1.Image != null)
@@ -456,5 +581,7 @@
                 Clipboard.SetImage(pictureBox1.Image);
             }
         }
+
+        #endregion
     }
 }
